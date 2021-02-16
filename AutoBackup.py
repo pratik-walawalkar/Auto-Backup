@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb 16 07:46:46 2021
-
-@author: Pratik
-"""
-
-# -*- coding: utf-8 -*-
-
 # =============================================================================
 
-# This script is written to rename the files with UTC timestamp which are added
-# to files while performing windows backup using file history. 
-# Incase the file history gets corrupted then Files can be renamed using this 
-# script after after deleting the duplicates using a third party software
+# This script is written to copy files from a source folder to destination folder
 
-# Created on Thu Jan 21 21:28:42 2021
+# Created on Tue Feb 16 07:46:46 2021
 
 # @author: Pratik Walawalkar
 
@@ -88,8 +76,7 @@ def check_path(path):
             loop == True
         else:
             return path            
-        
-        
+               
 def files_in_dst(destPath):
     '''
     Description
@@ -115,8 +102,6 @@ def files_in_dst(destPath):
     global dst, files_in_dest, no_of_files_in_dest
     files_in_dest = list()   
     
-    #Find total no. of files in the given directory
-    #total_files = sum(len(files) for path, directory, files in os.walk(os.path.join(path)))
     for (dirpath, dirnames, filenames) in os.walk(destPath):
             dst = dirpath.replace(destPath,"")
             files_in_dest += [ os.path.join(dst, file) for file in filenames]
@@ -153,7 +138,7 @@ def files_to_copy(sourcePath):
     files_to_be_copied = list()
     size_files_to_be_copied = 0
     
-    #Add the files with UTC timestamp to the list of files to be renamed
+    #Add unique/new files in source folder to a  list of files to be copied
     for (dirpath, dirnames, filenames) in os.walk(sourcePath):
         src = dirpath.replace(sourcePath,"")
         files_to_be_copied += [ os.path.join(src, file) for file in filenames if os.path.join(src, file) not in files_in_dest]
