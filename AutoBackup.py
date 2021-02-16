@@ -267,10 +267,10 @@ def copy_files(files_to_be_copied):
         action = "No new files to be copied"
 
 def update_log():
-    with open(os.path.join(destPath, "Update_log.txt"), 'a') as textFile:
+    with open(os.path.join(destPath, "Backup_log.txt"), 'a') as textFile:
             
 
-        textFile.write(now.strftime("%d/%m/%y %H:%M:%S") + ' - Backed up '+ str(files_copied) + ' files' + "(" + str(file_size(list_of_copied_files)) + ")" "\n")
+        textFile.write(now.strftime("%d/%m/%y %H:%M:%S") + ' - Backed up '+ str(files_copied) + ' files' + "(" + str(file_size(list_of_copied_files)) + " MB)" "\n")
     
 def time_conversion(time):
     '''
