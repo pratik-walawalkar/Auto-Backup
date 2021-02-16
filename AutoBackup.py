@@ -1,6 +1,9 @@
 # =============================================================================
 
 # This script is written to copy files from a source folder to destination folder
+# It can be used to copy large number of files from mobile or other devices
+# It can be further programmed to backup mobile data automatically when 
+# connected to the computer
 
 # Created on Tue Feb 16 07:46:46 2021
 
