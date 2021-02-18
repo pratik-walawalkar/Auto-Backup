@@ -415,7 +415,7 @@ def update_log():
             
             if files_copied == no_of_files_to_be_copied:
     
-                textFile.write("\n***************************************************************************\n\n")
+                textFile.write("\n*****************************************************************************\n\n")
                 textFile.write(now.strftime("%d/%m/%Y %H:%M:%S") + ' - Backed up '+ str(files_copied) + ' files' + "(" + str(file_size(list_of_copied_files)) + " MB)\n")
                 textFile.write("Total time taken: " + str(time_conversion(time_elapsed())) + "\n\n")
                 textFile.write("*****************************************************************************\n\n")
