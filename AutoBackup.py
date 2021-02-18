@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # =============================================================================
 
 # This script is written to copy files from a source folder to destination folder
@@ -17,9 +18,7 @@ import time
 import curses
 import shutil
 from datetime import datetime
-
-#sourcePath = r"D:\Users\Pratik\OneDrive - stud.th-deg.de\Documents\GitHub\Auto-Backup\Test\source" 
-#destPath = r"D:\Users\Pratik\OneDrive - stud.th-deg.de\Documents\GitHub\Auto-Backup\Test\destination"
+import sys
 
 files_copied = 0
 total_files_scanned = 1
@@ -34,32 +33,40 @@ def main():
     # total_files   - total no. of files in source folder
     loop - condition for while loop
     '''
-    global total_files, files_skipped, sourcePath, destPath
-          
-    sourcePath = check_path(input("Enter the source folder: "))        
-    destPath = check_path(input("Enter the destination folder: ")) 
-
+    global total_files, files_skipped, sourcePath, dir_select, no_of_files_to_be_copied
     
-    if os.path.isdir(sourcePath) and os.path.isdir(destPath) and sourcePath is not destPath:
+    #input source and destination path      
+
+    select_dir()
+
+    #check if source and destination is not the same
+    if sourcePath is not destPath:
         
-        print("Searchning for new files...")
+        print("\nSearchning for new files...")
         print("Please wait...")
         
-        #Find total no. of files in the given directory
+        #Find total no. of files in the source directory
         total_files = sum(len(files) for path, directory, files in os.walk(os.path.join(sourcePath)))
         
+        #iterate through destination and source folder
         files_in_dst(destPath)
         files_to_copy(sourcePath)
         
         print("Found " + str(no_of_files_to_be_copied) + " files to be copied\n")
         
         files_skipped = total_files - no_of_files_to_be_copied
+        
+        #while loop to decide the ececution of copy_files command
         loop = True
         while loop == True:
             cmd = input("Press 'Y' to proceed and 'N' to abort: ").lower()
             if cmd == 'y':
-                copy_files(files_to_be_copied)
-                update_log()
+                try:
+                    copy_files(files_to_be_copied)
+                except:
+                    no_of_files_to_be_copied = files_copied
+                    update_log()
+                
                 curses.initscr().getch()
                 loop = False
             elif cmd == 'n':
@@ -68,18 +75,114 @@ def main():
             else:    
                 print("Please enter a valid input")
                 loop = True
+                
     elif sourcePath is destPath:
         print("The source and destination path you entered is same...")
-        
-def check_path(path):    
+
+def select_dir():
+    '''
+    Description
+    -----------
+    Select source and destination directory    
+
+    Returns
+    -------
+    None.
+
+    '''
+    global sourcePath, destPath
     loop = True
+    #loop until a valid path is selected 
+    dir_select = input("Do you want to proceed with the saved source and destination?\nPress 1 to proceed \nPress 2 to enter new source and destination \nPress 3 for wireless mobile phone backup \nInput: ")
+
+    while loop == True:
+        
+        if dir_select == "1":           
+            sourcePath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\source" 
+            destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\destination"
+            loop = False 
+            
+        elif dir_select == "2":
+            sourcePath = check_path(input("\nEnter the source folder: "))        
+            destPath = check_path(input("Enter the destination folder: ")) 
+            loop = False
+            
+        elif dir_select == "3":
+            sourcePath = "Z:\\"
+            check_device() #select destination from the saved directory 
+            loop = False
+            
+        else:
+            print("Please enter a valid input!", end = "\r")
+
+def check_device():
+    '''
+    Description
+    -------
+    Searches for _device_info.txt in the source folder to find the name of the device 
+
+    Returns
+    -------
+    None.
+
+    '''
+    global destPath
+    
+    deviceInfo = os.path.join(sourcePath, "_device_info.txt")
+    
+    if os.path.exists(deviceInfo):
+        with open(deviceInfo, 'r') as file:
+            for line in file:
+                deviceName = line.strip()
+
+            if deviceName.lower() == "oneplus7":
+                #your desired destination path for this device
+                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+            elif deviceName.lower() == "redminote4":
+                #your desired destination path for this device
+                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+            elif deviceName.lower() == "redminote5pro":
+                #your desired destination path for this device
+                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\" 
+            elif deviceName.lower() == "oppof1s":
+                #your desired destination path for this device
+                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+            elif deviceName.lower() == "samsungm31":
+                #your desired destination path for this device
+                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"                  
+            else:
+                print("Device name did not match the saved device name")
+    else:
+        print("Device verification file (_device_info.txt) not found at {}". format(sourcePath))
+        print("\nTerminating the program!")
+        terminate()
+        
+def check_path(path): 
+    '''
+    Description
+    ----------
+    check if the entered path is a valid directory     
+
+    Parameters
+    ----------
+    path : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    path : TYPE
+        DESCRIPTION.
+
+    '''
+    loop = True
+    #loop until a valid path is entered
     while loop == True: 
         if not os.path.isdir(path):
             path = input("Please enter a valid path!!\n")
             loop == True
         else:
             return path            
-               
+            
 def files_in_dst(destPath):
     '''
     Description
@@ -106,17 +209,18 @@ def files_in_dst(destPath):
     files_in_dest = list()   
     
     for (dirpath, dirnames, filenames) in os.walk(destPath):
+            #removes destPath from dirPath to get a path within the destination directory to compare with source directory
             dst = dirpath.replace(destPath,"")
             files_in_dest += [ os.path.join(dst, file) for file in filenames]
     no_of_files_in_dest = len(files_in_dest)
-    
+    print("Found {} files in the destination folder". format(no_of_files_in_dest))
     return dst, files_in_dest, no_of_files_in_dest
-    
+
 def files_to_copy(sourcePath):
     '''
     Description
     ----------
-    find new files to be copied
+    iterates through source folder to find unique files to be copied to the destination    
     
     Parameters
     ----------
@@ -143,19 +247,22 @@ def files_to_copy(sourcePath):
     
     #Add unique/new files in source folder to a  list of files to be copied
     for (dirpath, dirnames, filenames) in os.walk(sourcePath):
+        #removes the sourcePath from dirPath to compare the file path with destination 
+        #to check if the same file exists in the destination at the same location
         src = dirpath.replace(sourcePath,"")
         files_to_be_copied += [ os.path.join(src, file) for file in filenames if os.path.join(src, file) not in files_in_dest]
-        size_files_to_be_copied = round(sum(os.path.getsize(os.path.join(sourcePath, file.strip("\\"))) for file in files_to_be_copied)/(1024*1024.0), 4)
+        
+    size_files_to_be_copied = round(sum(os.path.getsize(os.path.join(sourcePath, file.strip("\\"))) for file in files_to_be_copied)/(1024*1024.0), 4)
     
     no_of_files_to_be_copied = len(files_to_be_copied)
+    print("Found {} unique files to copy.".format(no_of_files_to_be_copied))
+    return files_to_be_copied, no_of_files_to_be_copied, size_files_to_be_copied
     
-    return src, files_to_be_copied, no_of_files_to_be_copied, size_files_to_be_copied
- 
 def file_size(list_of_files):
     '''
     Description
     ----------
-    calculates sum for files in a list
+    calculates the sum of files size in a list
     
     Parameters
     ----------
@@ -192,11 +299,12 @@ def status(filename):
     Variables
     -------
     '''
+    global interrupt
     
     curses.initscr().clear()
     curses.initscr().addstr(0, 0,"------------------------------------------------------------------------------")
     curses.initscr().addstr(1, 0,"File's copied                                      :" + str(files_copied) + " files / " + str(file_size(list_of_copied_files)) +" MB")
-    curses.initscr().addstr(2, 0,"Files already exist                                :" + str(files_skipped))
+    curses.initscr().addstr(2, 0,"Files already exist at destination                 :" + str(files_skipped))
     curses.initscr().addstr(3, 0,"Total file's to be copied                          :" + str(no_of_files_to_be_copied) +" files / "+ str(size_files_to_be_copied) +" MB")
     curses.initscr().addstr(4, 0,"Total file's in the Source Directory               :" + str(total_files))
     curses.initscr().addstr(5, 0,"------------------------------------------------------------------------------")
@@ -214,8 +322,6 @@ def status(filename):
     curses.initscr().addstr(17, 0,"Estimated time left = " + str(time_conversion(time_left())))
     curses.initscr().addstr(18, 0,"------------------------------------------------------------------------------")    
     curses.initscr().addstr(19, 0,"")  
-    
-    time.sleep(0.1)
 
 def copy_files(files_to_be_copied):
     
@@ -252,29 +358,68 @@ def copy_files(files_to_be_copied):
     for file in files_to_be_copied:
     
         
+        #removes \\ from the file path to join as a valid path
         src = os.path.join(sourcePath, file.strip("\\"))
         dst = os.path.join(destPath, file.strip("\\"))
-    
+        
+        #saves name of the directory
         directory = os.path.dirname(dst)
         
+        #make directory trees
         os.makedirs(directory, exist_ok=True)
+        #copies file from source to destination
         shutil.copy2(src, dst)    
         
+        #creates a list of copied files
         list_of_copied_files.append(dst)
         files_copied += 1
               
         action = "Copied: {}" .format(os.path.basename(file))
+        update_log()
         status(file)
         
+
     else:
         action = "No new files to be copied"
 
-def update_log():
-    with open(os.path.join(destPath, "Backup_log.txt"), 'a') as textFile:
-            
+def terminate():
+    sys.exit()
 
-        textFile.write(now.strftime("%d/%m/%y %H:%M:%S") + ' - Backed up '+ str(files_copied) + ' files' + "(" + str(file_size(list_of_copied_files)) + " MB)" "\n")
+def update_log():
+    '''
+    Description
+    -------
+    Creates a folder and saves the log file in it
+
+    Returns
+    -------
+    None.
+
+    '''
+    backup_log = os.path.join(destPath, "_backup_log")
     
+    if not os.path.exists(backup_log):
+        os.mkdir(backup_log)
+        
+    with open(os.path.join(backup_log, "Backup_log_{}.txt".format(now.strftime("%Y%m%d_%H%M%S"))), 'a') as textFile:
+    
+        if files_copied <= no_of_files_to_be_copied:
+            
+            if files_copied == 1:
+                textFile.write("*****************************************************************************\n\n")
+                textFile.write("Found " + str(no_of_files_to_be_copied) + " unique files to be copied - " + str(size_files_to_be_copied) + " MB\n")
+                textFile.write("Start time: " + str(now.strftime("%d/%m/%Y %H:%M:%S")) + "\n\n")
+                textFile.write("*****************************************************************************\n\n")
+                
+            textFile.write(" Copied -  "+ str(dst) + "\n")
+            
+            if files_copied == no_of_files_to_be_copied:
+    
+                textFile.write("\n***************************************************************************\n\n")
+                textFile.write(now.strftime("%d/%m/%Y %H:%M:%S") + ' - Backed up '+ str(files_copied) + ' files' + "(" + str(file_size(list_of_copied_files)) + " MB)\n")
+                textFile.write("Total time taken: " + str(time_conversion(time_elapsed())) + "\n\n")
+                textFile.write("*****************************************************************************\n\n")
+            
 def time_conversion(time):
     '''
     Description
@@ -385,6 +530,7 @@ def progressBar(files_copied, no_of_files_to_be_copied, decimals = 1, length = 5
 
 if __name__ == "__main__":
     main()
+
  
 
 
