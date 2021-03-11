@@ -84,6 +84,7 @@ def select_dir():
     Description
     -----------
     Select source and destination directory    
+    see to it that you use double backward slash in path
 
     Returns
     -------
@@ -98,8 +99,8 @@ def select_dir():
     while loop == True:
         
         if dir_select == "1":           
-            sourcePath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\source" 
-            destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\destination"
+            sourcePath = "D:\\User\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\source" 
+            destPath = "D:\\User\\OneDrive - stud.th-deg.de\\Documents\\GitHub\\Auto-Backup\\Test\\destination"
             loop = False 
             
         elif dir_select == "2":
@@ -137,19 +138,19 @@ def check_device():
 
             if deviceName.lower() == "oneplus7":
                 #your desired destination path for this device
-                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+                destPath = "D:\\Users\\User\\Pictures\\OnePlus 7\\"
             elif deviceName.lower() == "redminote4":
                 #your desired destination path for this device
-                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+                destPath = "D:\\Users\\User\\Pictures\\OnePlus 7\\"
             elif deviceName.lower() == "redminote5pro":
                 #your desired destination path for this device
-                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\" 
+                destPath = "D:\\Users\\User\\Pictures\\OnePlus 7\\" 
             elif deviceName.lower() == "oppof1s":
                 #your desired destination path for this device
-                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"
+                destPath = "D:\\Users\\User\\Pictures\\OnePlus 7\\"
             elif deviceName.lower() == "samsungm31":
                 #your desired destination path for this device
-                destPath = "D:\\Users\\Pratik\\OneDrive - stud.th-deg.de\\Pictures\\OnePlus 7\\"                  
+                destPath = "D:\\Users\\User\\Pictures\\OnePlus 7\\"                  
             else:
                 print("Device name did not match the saved device name")
     else:
